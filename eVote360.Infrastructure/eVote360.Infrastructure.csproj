@@ -37,9 +37,6 @@
 
   <ItemGroup>
     <Folder Include="Persistence\Migrations\" />
-    <Folder Include="UnitOfWork\" />
-    <Folder Include="OCR\" />
-    <Folder Include="Email\" />
   </ItemGroup>
 
 </Project>

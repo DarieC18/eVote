@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
-using eVote360.Application.Abstractions.Services;
-using eVote360.Application.DTOs.Request;
-using eVote360.Application.Results;
 using EVote360.Application.Abstractions.Repositories;
+using EVote360.Application.Abstractions.Services;
 using EVote360.Application.DTOs.Request;
 using EVote360.Application.DTOs.Response;
+using EVote360.Application.Results;
 using EVote360.Domain.Entities.Position;
 
 namespace EVote360.Application.Services;
@@ -23,7 +22,8 @@ public sealed class PositionService : IPositionService
     public async Task<Result<IEnumerable<PositionResponse>>> GetListAsync(CancellationToken ct = default)
     {
         var items = await _repo.ListAsync(ct: ct);
-        return Result<IEnumerable<PositionResponse>>.Success(_mapper.Map<IEnumerable<PositionResponse>>(items));
+        var dto = _mapper.Map<IEnumerable<PositionResponse>>(items);
+        return Result<IEnumerable<PositionResponse>>.Success(dto);
     }
 
     public async Task<Result<PositionResponse>> GetByIdAsync(Guid id, CancellationToken ct = default)
@@ -52,6 +52,7 @@ public sealed class PositionService : IPositionService
     {
         var entity = await _repo.GetByIdAsync(id, ct);
         if (entity is null) return Result.Failure("Puesto no encontrado.");
+
         entity.SetName(request.Name);
         await _repo.UpdateAsync(entity, ct);
         return Result.Success();
@@ -61,6 +62,7 @@ public sealed class PositionService : IPositionService
     {
         var entity = await _repo.GetByIdAsync(id, ct);
         if (entity is null) return Result.Failure("Puesto no encontrado.");
+
         if (entity.IsActive) entity.Deactivate(); else entity.Activate();
         await _repo.UpdateAsync(entity, ct);
         return Result.Success();

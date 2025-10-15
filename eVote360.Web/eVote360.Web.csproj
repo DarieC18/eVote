@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\" />
+    <Folder Include="Areas\NewFolder\" />
     <Folder Include="Configuration\" />
     <Folder Include="Middlewares\" />
   </ItemGroup>

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace EVote360.Application.Abstractions.Policies;
 
-namespace eVote360.Application.Abstractions.Policies
+public interface IElectionReadService
 {
-    internal interface IElectionReadService
-    {
-    }
+    Task<bool> HasActiveElectionAsync(CancellationToken ct = default);
 }

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace EVote360.Application.Abstractions.Emails;
 
-namespace eVote360.Application.Abstractions.Emails
+public interface IEmailSender
 {
-    internal interface IEmailSender
-    {
-    }
+    Task SendAsync(string to, string subject, string body, bool isHtml = false, CancellationToken ct = default);
 }

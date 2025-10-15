@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace EVote360.Application.ViewModels.Position;
 
-namespace eVote360.Application.ViewModels.Position
+public sealed class PositionListVM
 {
-    internal class PositionListVM
-    {
-    }
+    public Guid Id { get; set; }
+    public string Name { get; set; } = default!;
+    public bool IsActive { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

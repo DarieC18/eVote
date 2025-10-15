@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace EVote360.Application.DTOs.Request;
 
-namespace eVote360.Application.DTOs.Request
+public sealed class PositionUpdateRequest
 {
-    internal class PositionUpdateRequest
-    {
-    }
+    public string Name { get; set; } = default!;
 }
