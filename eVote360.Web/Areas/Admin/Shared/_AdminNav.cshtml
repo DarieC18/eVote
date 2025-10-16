@@ -1,0 +1,21 @@
+﻿@* Simple topbar para moverte dentro del área *@
+<nav class="navbar navbar-expand-lg bg-light border rounded p-2">
+    <div class="container-fluid">
+        <a class="navbar-brand" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="Admin" asp-controller="Positions" asp-action="Index">Puestos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="Admin" asp-controller="Parties" asp-action="Index">Partidos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-area="Admin" asp-controller="Users" asp-action="Index">Usuarios</a>
+                </li>
+
+                @* agrega aquí más enlaces (Partidos, Electores, Elecciones, etc.) *@
+            </ul>
+        </div>
+    </div>
+</nav>

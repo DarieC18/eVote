@@ -1,0 +1,61 @@
+﻿@model IEnumerable<EVote360.Application.ViewModels.Position.PositionListVM>
+@{
+    ViewData["Title"] = "Puestos";
+}
+<partial name="~/Areas/Admin/Shared/_AdminNav.cshtml" />
+
+<div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+    <h2 class="mb-0">Puestos</h2>
+    <a asp-area="Admin" asp-controller="Positions" asp-action="Create" class="btn btn-primary">Nuevo</a>
+</div>
+
+@if (TempData["Success"] is string s)
+{
+    <div class="alert alert-success">@s</div>
+}
+@if (TempData["Error"] is string e)
+{
+    <div class="alert alert-danger">@e</div>
+}
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th class="text-center">Activo</th>
+            <th>Creado</th>
+            <th style="width:180px"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td class="text-center">
+                    @if (item.IsActive)
+                    {
+                        <span class="badge text-bg-success">Sí</span>
+                    }
+                    else
+                    {
+
+                        <span class="badge text-bg-secondary">No</span>
+                    }
+                </td>
+                <td>@item.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                <td class="text-end">
+                    <a asp-area="Admin" asp-controller="Positions" asp-action="Edit" asp-route-id="@item.Id"
+                       class="btn btn-sm btn-outline-primary">Editar</a>
+                    <form asp-area="Admin" asp-controller="Positions" asp-action="Toggle" asp-route-id="@item.Id"
+                          method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-outline-warning">
+                            @(item.IsActive ? "Desactivar" : "Activar")
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

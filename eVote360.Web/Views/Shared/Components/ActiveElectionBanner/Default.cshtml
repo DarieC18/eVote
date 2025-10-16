@@ -1,0 +1,14 @@
+﻿@model EVote360.Web.ViewComponents.ActiveElectionBannerViewComponent.ActiveElectionVm
+
+@if (!string.IsNullOrWhiteSpace(Model?.Message))
+{
+    <div class="ev-banner @Model.Css">
+        <div class="container py-1 d-flex align-items-center justify-content-between">
+            <div class="small fw-semibold">@Model.Message</div>
+            <div class="small">
+                @* Links de ayuda/consulta pública si quieres *@
+                <a asp-controller="Elector" asp-action="Ayuda" class="link-light text-decoration-underline">Cómo votar</a>
+            </div>
+        </div>
+    </div>
+}

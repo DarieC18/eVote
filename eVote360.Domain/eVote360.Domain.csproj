@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Rules\**" />
+    <EmbeddedResource Remove="Rules\**" />
+    <None Remove="Rules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
@@ -26,10 +32,6 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.10" />
     <PackageReference Include="MimeKit" Version="4.14.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Rules\" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@ public class PartyAssignmentConfiguration : IEntityTypeConfiguration<PartyAssign
         b.ToTable("PartyAssignments");
         b.HasKey(x => x.Id);
 
-        b.Property(x => x.UserId).IsRequired();
+        b.Property(x => x.Id).IsRequired();
         b.Property(x => x.PartyId).IsRequired();
 
         b.HasOne<Domain.Entities.Party.Party>()
@@ -19,7 +19,7 @@ public class PartyAssignmentConfiguration : IEntityTypeConfiguration<PartyAssign
             .HasForeignKey(x => x.PartyId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        b.HasIndex(x => x.UserId).IsUnique(); // un usuario asignado a un solo partido
+        b.HasIndex(x => x.Id).IsUnique();
         b.Property(x => x.CreatedAt).IsRequired();
     }
 }

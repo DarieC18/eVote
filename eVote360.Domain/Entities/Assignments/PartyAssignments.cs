@@ -1,23 +1,30 @@
 ﻿using EVote360.Domain.Base;
+using EVote360.Domain.Entities;
+using PartyEntity = EVote360.Domain.Entities.Party.Party;
+
 
 namespace EVote360.Domain.Entities.Assignments;
 
-//asignacin de un usuario (sistema) a un partido concreto.
-///UserId es un Guid de la capa de identidad (fuera de Domain).
-
 public class PartyAssignment : AuditableEntity
 {
-    public Guid UserId { get; private set; }
+    public int UsuarioId { get; private set; }
+    public Usuario Usuario { get; private set; } = default!;
     public Guid PartyId { get; private set; }
+    public PartyEntity Party { get; private set; } = default!;
+    public bool Activo { get; private set; } = true;
 
     private PartyAssignment() { }
 
-    public PartyAssignment(Guid userId, Guid partyId)
+    public PartyAssignment(int usuarioId, Guid partyId)
     {
-        if (userId == Guid.Empty || partyId == Guid.Empty)
-            throw new ArgumentException("UserId o PartyId inválido.");
-        UserId = userId;
-        PartyId = partyId;
-    }
-}
+        if (usuarioId <= 0) throw new ArgumentException("UsuarioId inválido.", nameof(usuarioId));
+        if (partyId == Guid.Empty) throw new ArgumentException("PartyId inválido.", nameof(partyId));
 
+        UsuarioId = usuarioId;
+        PartyId = partyId;
+        Activo = true;
+    }
+
+    public void Activar() => Activo = true;
+    public void Desactivar() => Activo = false;
+}

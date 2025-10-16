@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Policies\**" />
+    <EmbeddedResource Remove="Policies\**" />
+    <None Remove="Policies\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
@@ -30,10 +36,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\eVote360.Domain\eVote360.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Policies\" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,23 @@
+﻿@model EVote360.Web.Models.ElectorIdVm
+@{
+    ViewData["Title"] = "Votación";
+}
+<h3 class="mt-2">Inicio de votación</h3>
+
+<form asp-action="Index" method="post" class="mt-3">
+    <div class="mb-3">
+        <label class="form-label">Cédula</label>
+        <input asp-for="NationalId" class="form-control" autocomplete="off" />
+        <span class="text-danger" asp-validation-for="NationalId"></span>
+    </div>
+
+    <div class="text-danger">
+        @Html.ValidationSummary()
+    </div>
+
+    <button class="btn btn-primary" type="submit">Continuar</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

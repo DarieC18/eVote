@@ -1,8 +1,226 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
+    var isAuth = User?.Identity?.IsAuthenticated ?? false;
+    var isAdmin = User.IsInRole("Administrador");
+    var isDir = User.IsInRole("Dirigente");
+    var puedeVotar = !isAuth || (!isAdmin && !isDir);
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-4">
+
+    <!-- HERO -->
+    <div class="bg-white rounded-4 shadow-sm p-4 p-md-5 mb-4">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <h1 class="display-5 fw-semibold mb-2">Bienvenido a <span class="text-primary">eVote360</span></h1>
+                <p class="lead text-secondary mb-4">
+                    Plataforma oficial para ejercer tu derecho al voto de forma segura, privada y auditable.
+                </p>
+
+                @if (puedeVotar)
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-primary btn-lg px-4" asp-controller="Elector" asp-action="Index">
+                            Ir a votar
+                        </a>
+                        <a class="btn btn-outline-secondary btn-lg px-4" asp-controller="Elector" asp-action="Ayuda">
+                            ¿Cómo votar?
+                        </a>
+                    </div>
+                    <div class="small text-muted mt-2">
+                        * Necesitarás tu cédula y una foto del documento para validar tu identidad.
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info d-flex align-items-center" role="alert">
+                        <div class="me-2">ℹ️</div>
+                        <div>
+                            Has iniciado sesión como <strong>@(isAdmin ? "Administrador" : "Dirigente")</strong>.
+                            El módulo de votación está disponible para ciudadanos no administradores.
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        @if (isAdmin)
+                        {
+                            <a class="btn btn-primary" asp-area="Admin" asp-controller="Elecciones" asp-action="Index">
+                                Ir al panel de administración
+                            </a>
+                        }
+                        @if (isDir)
+                        {
+                            <a class="btn btn-primary" asp-area="Dirigente" asp-controller="Home" asp-action="Index">
+                                Ir al panel de dirigente
+                            </a>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="card-header bg-gradient bg-primary text-white py-3 px-4">
+                        <h4 class="mb-0 fw-semibold d-flex align-items-center">
+                            <i class="bi bi-lightning-charge-fill me-2"></i>
+                            ¡Vota en menos de 3 minutos!
+                        </h4>
+                    </div>
+
+                    <div class="card-body p-4 bg-white">
+                        <p class="text-muted mb-4">
+                            Participa en el proceso electoral desde cualquier dispositivo,
+                            con total seguridad y transparencia.
+                        </p>
+
+                        <ul class="list-unstyled small mb-4">
+                            <li class="d-flex align-items-center mb-3">
+                                <i class="bi bi-shield-check text-success fs-5 me-2"></i>
+                                <span>Identidad verificada con <strong>OCR</strong></span>
+                            </li>
+                            <li class="d-flex align-items-center mb-3">
+                                <i class="bi bi-ui-checks text-success fs-5 me-2"></i>
+                                <span>Boleta <strong>clara</strong> y <strong>accesible</strong></span>
+                            </li>
+                            <li class="d-flex align-items-center">
+                                <i class="bi bi-envelope-check text-success fs-5 me-2"></i>
+                                <span>Comprobante enviado por correo</span>
+                            </li>
+                        </ul>
+
+                        @if (puedeVotar)
+                        {
+                            <p class="small text-center text-muted mt-3 mb-0">
+                                Solo necesitas tu cédula y una foto del documento.
+                            </p>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-secondary btn-lg w-100 py-3 shadow-sm d-flex justify-content-center align-items-center"
+                               asp-controller="Elector" asp-action="Ayuda">
+                                <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+                                <span class="fw-semibold">Ver guía del elector</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- PASOS -->
+    <section class="mb-5">
+        <h2 class="h4 fw-semibold mb-3">¿Cómo funciona?</h2>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-3">
+                <div class="h-100 bg-white rounded-4 shadow-sm p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="badge bg-primary rounded-circle me-2" style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;">1</div>
+                        <strong>Identifícate</strong>
+                    </div>
+                    <p class="text-muted small mb-0">Ingresa tu cédula y sube la foto frontal del documento para validar.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="h-100 bg-white rounded-4 shadow-sm p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="badge bg-primary rounded-circle me-2" style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;">2</div>
+                        <strong>Elige en la boleta</strong>
+                    </div>
+                    <p class="text-muted small mb-0">Selecciona tu preferencia para cada puesto disponible.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="h-100 bg-white rounded-4 shadow-sm p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="badge bg-primary rounded-circle me-2" style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;">3</div>
+                        <strong>Confirma tu voto</strong>
+                    </div>
+                    <p class="text-muted small mb-0">Revisa el resumen y confirma. Tu voto se registra de forma segura.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="h-100 bg-white rounded-4 shadow-sm p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="badge bg-primary rounded-circle me-2" style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;">4</div>
+                        <strong>Recibe comprobante</strong>
+                    </div>
+                    <p class="text-muted small mb-0">Te enviamos un comprobante por correo (si está disponible).</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PREGUNTAS RÁPIDAS -->
+    <section>
+        <div class="row g-3">
+            <div class="col-lg-8">
+                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                    <h3 class="h5">Preguntas frecuentes</h3>
+                    <div class="accordion mt-2" id="faq">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="f1">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c1">
+                                    ¿Qué necesito para votar?
+                                </button>
+                            </h2>
+                            <div id="c1" class="accordion-collapse collapse" data-bs-parent="#faq">
+                                <div class="accordion-body">
+                                    Tu cédula y una foto nítida del documento para validar identidad por OCR.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="f2">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c2">
+                                    ¿Mi voto es secreto?
+                                </button>
+                            </h2>
+                            <div id="c2" class="accordion-collapse collapse" data-bs-parent="#faq">
+                                <div class="accordion-body">
+                                    Sí. El sistema registra tu voto cifrado y separa identidad de selección.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="f3">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c3">
+                                    ¿Qué pasa si ya voté?
+                                </button>
+                            </h2>
+                            <div id="c3" class="accordion-collapse collapse" data-bs-parent="#faq">
+                                <div class="accordion-body">
+                                    El sistema no permitirá un segundo voto con la misma cédula en la elección activa.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a asp-controller="Elector" asp-action="Ayuda" class="btn btn-outline-primary">
+                            Ver guía completa del elector
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
+                    <h3 class="h5">Requisitos mínimos</h3>
+                    <ul class="small text-muted mb-0">
+                        <li>Documento de identidad vigente</li>
+                        <li>Correo electrónico (opcional, para comprobante)</li>
+                        <li>Conexión estable a internet</li>
+                    </ul>
+                    @if (puedeVotar)
+                    {
+                        <a asp-controller="Elector" asp-action="Index" class="btn btn-success mt-3 w-100">
+                            Listo, ¡quiero votar!
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
 </div>

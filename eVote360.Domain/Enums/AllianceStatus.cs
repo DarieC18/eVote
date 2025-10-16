@@ -2,8 +2,7 @@
 
 public enum AllianceStatus
 {
-    Pending = 0,
-    Accepted = 1,
-    Rejected = 2,
-    Cancelled = 3,
+    Pending = 0, // Pendiente
+    Accepted = 1, // Aceptada
+    Rejected = 2  // Rechazada
 }

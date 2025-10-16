@@ -1,0 +1,57 @@
+﻿@model List<EVote360.Application.DTOs.Response.UserResponseDto>
+@{
+    ViewData["Title"] = "Usuarios";
+}
+<h2 class="mb-3">Usuarios</h2>
+
+<div class="mb-2">
+    <a class="btn btn-primary" asp-action="Create">Nuevo usuario</a>
+</div>
+
+@if (TempData["Ok"] != null)
+{
+    <div class="alert alert-success">@TempData["Ok"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th class="text-center">Estado</th>
+                <th style="width:180px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td>@($"{u.LastName}, {u.FirstName}")</td>
+                    <td>@u.UserName</td>
+                    <td>@u.Email</td>
+                    <td>@u.Role</td>
+                    <td class="text-center">
+                        <span class="badge @(u.IsActive ? "bg-success" : "bg-secondary")">
+                            @(u.IsActive ? "Activo" : "Inactivo")
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@u.Id">Editar</a>
+                        <form asp-action="Toggle" asp-route-id="@u.Id" method="post" class="d-inline">
+                            <button class="btn btn-sm btn-outline-warning" type="submit">
+                                @(u.IsActive ? "Desactivar" : "Activar")
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

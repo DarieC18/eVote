@@ -44,5 +44,21 @@ public class BallotOption : AuditableEntity
             IsNinguno = true
         };
     }
+    public static BallotOption ForCandidate(Guid electionBallotId, Guid candidateId)
+    => new BallotOption
+    {
+        ElectionBallotId = electionBallotId,
+        CandidateId = candidateId,
+        IsNinguno = false
+    };
+
+    public static BallotOption None(Guid electionBallotId)
+        => new BallotOption
+        {
+            ElectionBallotId = electionBallotId,
+            CandidateId = null,
+            IsNinguno = true
+        };
+
 }
 

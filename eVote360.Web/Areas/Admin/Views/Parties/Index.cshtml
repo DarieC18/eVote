@@ -1,0 +1,43 @@
+﻿@model IEnumerable<EVote360.Application.DTOs.Response.PartyResponse>
+@{
+    ViewData["Title"] = "Partidos";
+}
+<partial name="~/Areas/Admin/Shared/_AdminNav.cshtml" />
+<div class="d-flex justify-content-between align-items-center my-3">
+    <h2 class="mb-0">Partidos</h2>
+    <a asp-area="Admin" asp-controller="Parties" asp-action="Create" class="btn btn-primary">Nuevo</a>
+</div>
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string er)
+{
+    <div class="alert alert-danger">@er</div>
+}
+<table class="table table-striped align-middle">
+    <thead><tr><th>Logo</th><th>Nombre</th><th>Siglas</th><th>Activo</th><th style="width:220px"></th></tr></thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td style="width:64px">
+                    @if (!string.IsNullOrWhiteSpace(p.LogoPath))
+                    {
+                        <img src="@p.LogoPath" style="height:40px" />
+                    }
+                </td>
+                <td>@p.Name</td>
+                <td>@p.Siglas</td>
+                <td>@(p.IsActive ? "Sí" : "No")</td>
+                <td class="text-end">
+                    <a asp-area="Admin" asp-controller="Parties" asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary">Editar</a>
+                    <form asp-area="Admin" asp-controller="Parties" asp-action="Toggle" asp-route-id="@p.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-outline-dark">@((p.IsActive) ? "Desactivar" : "Activar")</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

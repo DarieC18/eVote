@@ -1,0 +1,50 @@
+﻿@model EVote360.Web.Models.BoletaVm
+@{
+    ViewData["Title"] = "Boleta";
+}
+<h3 class="mt-2">Boleta</h3>
+
+@if (Model.Puestos.Count == 0)
+{
+    <div class="alert alert-info mt-3">No hay puestos configurados para esta elección.</div>
+}
+else
+{
+    <table class="table table-sm align-middle mt-3">
+        <thead>
+            <tr>
+                <th>Puesto</th>
+                <th style="width:140px">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model.Puestos)
+            {
+                <tr>
+                    <td>@p.PositionName</td>
+                    <td>
+                        @if (p.YaVotado)
+                        {
+                            <span class="badge bg-success">Votado</span>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-primary btn-sm"
+                               asp-action="Opciones"
+                               asp-route-electionId="@Model.ElectionId"
+                               asp-route-citizenId="@Model.CitizenId"
+                               asp-route-positionId="@p.PositionId">
+                                Elegir
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="d-flex gap-2">
+        <a class="btn btn-success" asp-action="Finalizar">Finalizar</a>
+        <a class="btn btn-secondary" asp-action="Index">Volver</a>
+    </div>
+}

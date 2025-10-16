@@ -1,0 +1,66 @@
+﻿@model IReadOnlyList<(Guid id, int year, string status)>
+@{
+    ViewData["Title"] = "Gestión de Elecciones";
+}
+
+<h3 class="mb-3">Gestión de Elecciones</h3>
+
+@if (TempData["msg"] is string msg)
+{
+    <div class="alert alert-info">@msg</div>
+}
+
+<form asp-action="Crear" method="post" class="mb-3">
+    <div class="input-group" style="max-width: 300px;">
+        <input name="year" class="form-control" placeholder="Año" type="number" required />
+        <button class="btn btn-primary" type="submit">Crear</button>
+    </div>
+</form>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Año</th>
+            <th>Estado</th>
+            <th style="width:350px">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td>@e.year</td>
+                <td>
+                    @if (e.status == "Active")
+                    {
+                        <span class="badge bg-success">Activa</span>
+                    }
+                    else if (e.status == "Finished")
+                    {
+
+                        <span class="badge bg-danger">Finalizada</span>
+                    }
+                    else
+                    {
+
+                        <span class="badge bg-secondary">Borrador</span>
+                    }
+                </td>
+                <td class="d-flex gap-2">
+                    <form asp-action="Construir" method="post">
+                        <input type="hidden" name="id" value="@e.id" />
+                        <button class="btn btn-outline-secondary btn-sm">Construir Boleta</button>
+                    </form>
+                    <form asp-action="Activar" method="post">
+                        <input type="hidden" name="id" value="@e.id" />
+                        <button class="btn btn-outline-success btn-sm">Activar</button>
+                    </form>
+                    <form asp-action="Finalizar" method="post">
+                        <input type="hidden" name="id" value="@e.id" />
+                        <button class="btn btn-outline-danger btn-sm">Finalizar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

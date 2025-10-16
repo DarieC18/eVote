@@ -1,0 +1,54 @@
+﻿@model EVote360.Application.ViewModels.Users.UserCreateVm
+@{
+    ViewData["Title"] = "Nuevo usuario";
+}
+<h2 class="mb-3">Nuevo usuario</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form asp-action="Create" method="post" class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="FirstName" class="form-label"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="LastName" class="form-label"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="UserName" class="form-label"></label>
+        <input asp-for="UserName" class="form-control" />
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" class="form-control" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Role" class="form-label"></label>
+        <select asp-for="Role" class="form-select">
+            <option>Administrador</option>
+            <option>Dirigente</option>
+        </select>
+        <span asp-validation-for="Role" class="text-danger"></span>
+    </div>
+    <div class="col-12">
+        <a asp-action="Index" class="btn btn-outline-secondary">Volver</a>
+        <button class="btn btn-primary" type="submit">Crear</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

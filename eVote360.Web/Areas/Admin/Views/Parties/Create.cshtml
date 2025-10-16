@@ -1,0 +1,38 @@
+﻿@model EVote360.Application.ViewModels.Party.PartyFormVM
+@{
+    ViewData["Title"] = "Nuevo Partido";
+}
+<partial name="~/Areas/Admin/Shared/_AdminNav.cshtml" />
+<h2 class="mt-3">Nuevo Partido</h2>
+<hr />
+<form asp-area="Admin" asp-controller="Parties" asp-action="Create" method="post" enctype="multipart/form-data" novalidate>
+    @Html.AntiForgeryToken()
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="Siglas" class="form-label"></label>
+            <input asp-for="Siglas" class="form-control" />
+            <span asp-validation-for="Siglas" class="text-danger"></span>
+        </div>
+        <div class="col-md-12">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Logo</label>
+            <input type="file" name="logo" class="form-control" accept="image/*" />
+        </div>
+    </div>
+    <div class="mt-3">
+        <button class="btn btn-primary">Guardar</button>
+        <a asp-area="Admin" asp-controller="Parties" asp-action="Index" class="btn btn-secondary">Volver</a>
+    </div>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,9 +1,8 @@
 ﻿namespace EVote360.Domain.Enums;
 
-public enum ElectionState
+public enum ElectionStatus
 {
-    Created = 0,
-    InProcess = 1,
-    Finalized = 2
+    Draft = 0, // Borrador
+    Active = 1, // Activa
+    Finished = 2  // Finalizada
 }
-

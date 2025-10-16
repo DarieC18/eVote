@@ -43,10 +43,10 @@ public class Alliance : AuditableEntity, ISoftDeletable
 
     public void Cancel()
     {
-        if (Status is AllianceStatus.Accepted or AllianceStatus.Rejected or AllianceStatus.Cancelled)
+        if (Status is AllianceStatus.Accepted or AllianceStatus.Rejected or AllianceStatus.Rejected)
             throw new InvalidOperationException("La alianza ya tiene estado final.");
 
-        Status = AllianceStatus.Cancelled;
+        Status = AllianceStatus.Rejected;
         RespondedAt = DateTime.UtcNow;
         Touch();
     }
@@ -65,6 +65,6 @@ public class Alliance : AuditableEntity, ISoftDeletable
 file static class AllianceStatusExtensions
 {
     public static bool Finally(this AllianceStatus status) =>
-        status is AllianceStatus.Accepted or AllianceStatus.Rejected or AllianceStatus.Cancelled;
+        status is AllianceStatus.Accepted or AllianceStatus.Rejected or AllianceStatus.Rejected;
 }
 

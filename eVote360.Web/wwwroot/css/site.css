@@ -29,3 +29,11 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+/* Landing */
+body {
+    background-color: #f6f7fb;
+}
+
+.card, .rounded-4 {
+    border-radius: 1rem !important;
+}

@@ -1,50 +1,240 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using System.Security.Claims
+
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - eVote360.Web</title>
-    <script type="importmap"></script>
+    <title>@(ViewData["Title"] ?? "eVote360") - eVote360</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/eVote360.Web.styles.css" asp-append-version="true" />
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
+    <meta name="color-scheme" content="light dark" />
+    <style>
+        /* Stepper del Elector */
+        .ev-stepper {
+            display: flex;
+            gap: .5rem;
+            align-items: center;
+            margin: .5rem 0 1rem;
+        }
+
+        .ev-step {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: .875rem;
+        }
+
+        .ev-dot {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #6c757d;
+            color: #6c757d;
+        }
+
+        .ev-step.active .ev-dot {
+            background: #0d6efd;
+            border-color: #0d6efd;
+            color: #fff;
+        }
+
+        .ev-step.done .ev-dot {
+            background: #198754;
+            border-color: #198754;
+            color: #fff;
+        }
+
+        .ev-sep {
+            flex: 1 1 auto;
+            height: 2px;
+            background: #dee2e6;
+        }
+
+        .ev-step .label {
+            white-space: nowrap;
+        }
+
+        .ev-banner {
+            font-size: .9rem;
+        }
+
+        .ev-flash {
+            position: sticky;
+            top: 0;
+            z-index: 1025;
+        }
+    </style>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+<body class="bg-light">
+
+    <!-- BANNER: Estado de elección activa -->
+    <div class="ev-flash">
+        @* Usa un ViewComponent; si no existe aún, puedes setear ViewBag.ActiveElection desde un filtro *@
+    </div>
+
+    <header class="border-bottom bg-white">
+        <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">eVote360.Web</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-semibold" asp-area="" asp-controller="Home" asp-action="Index">eVote360</a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
+                        aria-controls="topNav" aria-expanded="false" aria-label="Alternar navegación">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div id="topNav" class="collapse navbar-collapse">
+                    <!-- IZQUIERDA: menús por rol -->
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                        @* ADMIN *@
+                        @if (User.IsInRole("Administrador"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Administración
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Puestos" asp-action="Index">Puestos electivos</a></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Ciudadanos" asp-action="Index">Ciudadanos</a></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Partidos" asp-action="Index">Partidos políticos</a></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Usuarios" asp-action="Index">Usuarios</a></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Asignaciones" asp-action="Dirigentes">Asignación de dirigentes</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Elecciones" asp-action="Index">Elecciones</a></li>
+                                </ul>
+                            </li>
+                        }
+
+                        @* DIRIGENTE *@
+                        @if (User.IsInRole("Dirigente"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Dirigente
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-area="Dirigente" asp-controller="Home" asp-action="Index">Panel</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li><a class="dropdown-item" asp-area="Dirigente" asp-controller="Candidatos" asp-action="Index">Candidatos</a></li>
+                                    <li><a class="dropdown-item" asp-area="Dirigente" asp-controller="Asignaciones" asp-action="CandidatoPuesto">Asignar candidato a puesto</a></li>
+                                    <li><a class="dropdown-item" asp-area="Dirigente" asp-controller="Alianzas" asp-action="Index">Alianzas políticas</a></li>
+                                </ul>
+                            </li>
+                        }
+
+                        @* Links generales *@
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+
+                        @* PDF: Admin/Dirigente no deben acceder al flujo de Elector *@
+                        @if (!(User?.Identity?.IsAuthenticated ?? false) || (!User.IsInRole("Administrador") && !User.IsInRole("Dirigente")))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Elector" asp-action="Index">Votar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Elector" asp-action="Ayuda">¿Cómo votar?</a>
+                            </li>
+                        }
+                    </ul>
+
+                    <!-- DERECHA: acceso / usuario -->
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        @if (User?.Identity?.IsAuthenticated ?? false)
+                        {
+                            <li class="nav-item d-flex align-items-center me-2">
+                                <span class="navbar-text small text-muted">
+                                    @User.Identity!.Name
+                                    @if (User.IsInRole("Administrador"))
+                                    {
+                                        <span class="badge bg-primary ms-1">Admin</span>
+                                    }
+                                    @if (User.IsInRole("Dirigente"))
+                                    {
+                                        <span class="badge bg-info text-dark ms-1">Dirigente</span>
+                                    }
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Cuenta" asp-action="Salir" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-link nav-link">Salir</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Cuenta" asp-action="Acceder">Acceder</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container my-3">
+        @* Mensajes globales *@
+        @if (TempData["Ok"] is string okMsg)
+        {
+            <div class="alert alert-success" role="alert">@okMsg</div>
+        }
+        @if (TempData["Error"] is string errMsg)
+        {
+            <div class="alert alert-danger" role="alert">@errMsg</div>
+        }
+
+        @* STEPPER: solo en Elector *@
+        @{
+            var controller = (ViewContext.RouteData.Values["controller"]?.ToString() ?? "").ToLowerInvariant();
+            var isElector = controller == "elector";
+            var step = (ViewBag.ElectorStep as int?) ?? 1; // 1..5
+            string StepClass(int n) => n < step ? "ev-step done" : (n == step ? "ev-step active" : "ev-step");
+        }
+        @if (isElector)
+        {
+            <nav aria-label="Progreso del voto" class="ev-stepper" id="ev-elector-stepper">
+                <div class="@StepClass(1)"><span class="ev-dot">1</span><span class="label">Inicio</span></div>
+                <div class="ev-sep"></div>
+                <div class="@StepClass(2)"><span class="ev-dot">2</span><span class="label">Identidad</span></div>
+                <div class="ev-sep"></div>
+                <div class="@StepClass(3)"><span class="ev-dot">3</span><span class="label">Boleta</span></div>
+                <div class="ev-sep"></div>
+                <div class="@StepClass(4)"><span class="ev-dot">4</span><span class="label">Confirmación</span></div>
+                <div class="ev-sep"></div>
+                <div class="@StepClass(5)"><span class="ev-dot">5</span><span class="label">Comprobante</span></div>
+            </nav>
+        }
+
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - eVote360.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        <div class="container py-2 d-flex flex-wrap gap-3 align-items-center">
+            <div>&copy; @DateTime.Now.Year - eVote360</div>
+            <div class="ms-auto small">
+                <a asp-controller="Home" asp-action="Privacidad" class="link-secondary me-2">Privacidad</a>
+                <a asp-controller="Home" asp-action="Terminos" class="link-secondary">Términos</a>
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
