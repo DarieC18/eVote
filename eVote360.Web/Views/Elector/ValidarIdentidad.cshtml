@@ -1,19 +1,50 @@
 ﻿@{
-    ViewData["Title"] = "Validar Identidad";
+    ViewData["Title"] = "Votación - Validar documento";
 }
-<h3 class="mt-2">Validar identidad</h3>
-<p class="text-muted">Sube una foto del frente de tu documento para validar tu identidad.</p>
 
-<form asp-action="ValidarIdentidad" method="post" enctype="multipart/form-data" class="mt-3">
-    <div class="mb-3">
-        <label class="form-label">Documento (frontal)</label>
-        <input type="file" name="documentoFrontal" class="form-control" />
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white rounded-top-4">
+                    <h4 class="mb-0 fw-semibold d-flex align-items-center">
+                        <i class="bi bi-camera-fill me-2"></i> Sube la foto de tu documento
+                    </h4>
+                </div>
+
+                <div class="card-body p-4">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <p class="text-muted">
+                        Sube una <strong>foto nítida</strong> del frente de tu documento para validar tu identidad.
+                    </p>
+
+                    <ul class="small text-muted">
+                        <li>Evita reflejos y cortes del documento.</li>
+                        <li>Coloca el documento sobre fondo liso y bien iluminado.</li>
+                        <li>Formatos aceptados: JPG/PNG. Tamaño máx. razonable.</li>
+                    </ul>
+
+                    <form asp-action="ValidarIdentidad" method="post" enctype="multipart/form-data" class="mt-3" novalidate>
+                        <div class="mb-4">
+                            <label for="documentoFrontal" class="form-label fw-semibold">Foto del documento (frontal)</label>
+                            <input type="file" class="form-control form-control-lg" id="documentoFrontal" name="documentoFrontal" accept="image/*" required />
+                            <div class="form-text">Solo una imagen. Se usará para comparar con tu cédula.</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Atrás
+                            </a>
+                            <button type="submit" class="btn btn-success ms-auto">
+                                <i class="bi bi-magic"></i> Validar documento
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
     </div>
-
-    <div class="text-danger">
-        @Html.ValidationSummary()
-    </div>
-
-    <button class="btn btn-primary" type="submit">Validar</button>
-    <a class="btn btn-secondary" asp-action="Index">Volver</a>
-</form>
+</div>

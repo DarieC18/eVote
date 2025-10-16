@@ -1,6 +1,8 @@
-﻿using EVote360.Application.Common.Security;
-using EVote360.Application.Interfaces;
+﻿using eVote360.Application.Abstractions.Services;
+using EVote360.Application.Abstractions.Repositories;
+using EVote360.Application.Common.Security;
 using EVote360.Domain.Entities;
+
 
 namespace EVote360.Application.Services;
 public class AuthService : IAuthService

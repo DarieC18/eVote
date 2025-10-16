@@ -1,0 +1,97 @@
+﻿@model List<EVote360.Application.DTOs.PartyAssignments.PartyAssignmentResponseDto>
+@{
+    ViewData["Title"] = "Asignación de dirigentes a partidos";
+    var dirigentes = (IEnumerable<dynamic>?)ViewBag.Dirigentes ?? Enumerable.Empty<dynamic>();
+    var partidos = (IEnumerable<dynamic>?)ViewBag.Partidos ?? Enumerable.Empty<dynamic>();
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h2 class="h4 fw-semibold mb-0">Asignaciones de Dirigentes</h2>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearModal">
+        Nueva asignación
+    </button>
+</div>
+
+@if (TempData["Ok"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Dirigente</th>
+                <th>Partido</th>
+                <th class="text-center">Estado</th>
+                <th style="width:180px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var a in Model)
+            {
+                <tr>
+                    <td>@a.UsuarioNombre</td>
+                    <td>@a.PartyNombre</td>
+                    <td class="text-center">
+                        <span class="badge @(a.Activo ? "bg-success" : "bg-secondary")">
+                            @(a.Activo ? "Activo" : "Inactivo")
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <form asp-action="Toggle" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@a.Id" />
+                            <button class="btn btn-sm btn-outline-warning" type="submit">
+                                @(a.Activo ? "Desactivar" : "Activar")
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal crear -->
+<div class="modal fade" id="crearModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-4">
+            <div class="modal-header">
+                <h5 class="modal-title">Nueva asignación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Crear" method="post" id="formCrear">
+                    <div class="mb-3">
+                        <label class="form-label">Dirigente</label>
+                        <select class="form-select" name="UsuarioId" required>
+                            <option value="">Seleccione...</option>
+                            @foreach (var d in dirigentes)
+                            {
+                                <option value="@d.Id">@d.Nombre</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Partido</label>
+                        <select class="form-select" name="PartyId" required>
+                            <option value="">Seleccione...</option>
+                            @foreach (var p in partidos)
+                            {
+                                <option value="@p.Id">@p.Name</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" onclick="document.getElementById('formCrear').submit()">Crear</button>
+            </div>
+        </div>
+    </div>
+</div>

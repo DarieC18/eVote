@@ -1,4 +1,4 @@
-﻿using EVote360.Application.Interfaces;
+﻿using eVote360.Application.Abstractions.Services;
 using EVote360.Domain.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

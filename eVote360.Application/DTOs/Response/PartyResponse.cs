@@ -1,12 +1,11 @@
 ﻿namespace EVote360.Application.DTOs.Response;
 
-public sealed class PartyResponse
+public class PartyResponse
 {
     public Guid Id { get; set; }
-    public string Name { get; set; } = default!;
-    public string Siglas { get; set; } = default!;
+    public string Name { get; set; } = "";
+    public string Acronym { get; set; } = "";
     public string? Description { get; set; }
     public bool IsActive { get; set; }
-    public DateTime CreatedAt { get; set; }
     public string? LogoPath { get; set; }
 }

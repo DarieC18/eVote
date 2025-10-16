@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace EVote360.Web.Models
+﻿namespace EVote360.Web.Models
 {
     public class ElectorIdVm
     {
@@ -19,8 +16,8 @@ namespace EVote360.Web.Models
         public Guid PositionId { get; set; }
         public string PositionName { get; set; } = "";
         public bool YaVotado { get; set; }
-        public int Partidos { get; set; }    // nuevo
-        public int Candidatos { get; set; }  // nuevo
+        public int Partidos { get; set; }
+        public int Candidatos { get; set; }
     }
 
     public class OpcionVm

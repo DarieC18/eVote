@@ -1,24 +1,20 @@
 ﻿using AutoMapper;
-using EVote360.Application.DTOs.Request;
 using EVote360.Application.DTOs.Response;
-using EVote360.Application.ViewModels.Users;
+using EVote360.Domain.Entities;
 
-namespace EVote360.Application.Profiles;
-
-public class UserProfile : Profile
+namespace EVote360.Application.Mappings.EntitiesAndDtos
 {
-    public UserProfile()
+    public class UserProfile : Profile
     {
-        CreateMap<EVote360.Domain.Entities.Usuario, UserResponseDto>()
-            .ForMember(d => d.FirstName, opt => opt.MapFrom(s => s.Nombre))
-            .ForMember(d => d.LastName, opt => opt.MapFrom(s => s.Apellido))
-            .ForMember(d => d.Email, opt => opt.MapFrom(s => s.Email))
-            .ForMember(d => d.UserName, opt => opt.MapFrom(s => s.NombreUsuario))
-            .ForMember(d => d.Role, opt => opt.MapFrom(s => s.Rol))
-            .ForMember(d => d.IsActive, opt => opt.MapFrom(s => s.Activo))
-            .ForMember(d => d.CreatedAt, opt => opt.Ignore());
-
-        CreateMap<UserCreateVm, UserCreateRequestDto>();
-        CreateMap<UserEditVm, UserUpdateRequestDto>();
+        public UserProfile()
+        {
+            CreateMap<Usuario, UserResponseDto>()
+                .ForMember(d => d.FirstName, m => m.MapFrom(s => s.Nombre))
+                .ForMember(d => d.LastName, m => m.MapFrom(s => s.Apellido))
+                .ForMember(d => d.Email, m => m.MapFrom(s => s.Email))
+                .ForMember(d => d.UserName, m => m.MapFrom(s => s.NombreUsuario))
+                .ForMember(d => d.Role, m => m.MapFrom(s => s.Rol))
+                .ForMember(d => d.IsActive, m => m.MapFrom(s => s.Activo));
+        }
     }
 }

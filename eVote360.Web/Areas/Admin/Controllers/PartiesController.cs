@@ -51,7 +51,7 @@ public class PartiesController : Controller
         var vm = new PartyFormVM
         {
             Name = res.Data!.Name,
-            Siglas = res.Data.Siglas,
+            Siglas = res.Data.Acronym,
             Description = res.Data.Description,
             LogoPath = res.Data.LogoPath
         };

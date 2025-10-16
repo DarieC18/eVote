@@ -1,42 +1,62 @@
 ﻿@model EVote360.Web.Models.OpcionesVm
 @{
-    ViewData["Title"] = "Elegir opción";
+    ViewData["Title"] = "Seleccionar opción";
 }
-<h3 class="mt-2">Elegir opción</h3>
 
-<form asp-action="Votar" method="post" class="mt-3">
-    <input type="hidden" asp-for="ElectionId" />
-    <input type="hidden" asp-for="CitizenId" />
-    <input type="hidden" asp-for="PositionId" />
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
 
-    @if (Model.Opciones.Count == 0)
-    {
-        <div class="alert alert-info">No hay opciones disponibles para este puesto.</div>
-    }
-    else
-    {
-        <div class="mb-3">
-            @for (int i = 0; i < Model.Opciones.Count; i++)
-            {
-                var op = Model.Opciones[i];
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="CandidateId"
-                           value="@(op.CandidateId.HasValue? op.CandidateId.ToString() : "")" />
-                    <label class="form-check-label">@op.Display</label>
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-header bg-primary text-white rounded-top-4">
+                    <h5 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-ui-checks-grid me-2"></i> Selecciona tu opción
+                    </h5>
                 </div>
-            }
+
+                <div class="card-body p-4">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <form asp-action="Votar" method="post" novalidate>
+                        @* Hidden IDs *@
+                        <input type="hidden" asp-for="ElectionId" />
+                        <input type="hidden" asp-for="CitizenId" />
+                        <input type="hidden" asp-for="PositionId" />
+
+                        <div class="list-group mb-4">
+                            @if (Model.Opciones == null || !Model.Opciones.Any())
+                            {
+                                <div class="alert alert-warning mb-0">
+                                    No hay opciones disponibles para este puesto.
+                                </div>
+                            }
+                            else
+                            {
+                                @for (int i = 0; i < Model.Opciones.Count; i++)
+                                {
+                                    var item = Model.Opciones[i];
+                                    var inputId = $"opt_{i}";
+                                    <label class="list-group-item d-flex align-items-center" for="@inputId">
+                                        <input class="form-check-input me-3" type="radio" name="CandidateId"
+                                               value="@(item.CandidateId?.ToString() ?? string.Empty)" id="@inputId" required />
+                                        <span>@item.Display</span>
+                                    </label>
+                                }
+                            }
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a asp-action="Boleta" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver a la boleta
+                            </a>
+                            <button type="submit" class="btn btn-success ms-auto">
+                                <i class="bi bi-check2-circle"></i> Registrar voto
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
-    }
-
-    <div class="text-danger">
-        @Html.ValidationSummary()
     </div>
-
-    <div class="d-flex gap-2">
-        <button class="btn btn-primary" type="submit">Registrar voto</button>
-        <a class="btn btn-secondary"
-           asp-action="Boleta">Volver</a>
-    </div>
-</form>
+</div>

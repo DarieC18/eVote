@@ -35,6 +35,7 @@ public class AppDbContext : DbContext
     public DbSet<EVote360.Domain.Entities.Usuario> Usuarios { get; set; } = null!;
 
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

@@ -37,3 +37,12 @@ body {
 .card, .rounded-4 {
     border-radius: 1rem !important;
 }
+input:focus, button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+

@@ -1,4 +1,4 @@
-﻿namespace EVote360.Application.Elecciones;
+﻿namespace eVote360.Application.Abstractions.Services;
 
 public interface IElectionService
 {

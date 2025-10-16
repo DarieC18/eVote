@@ -3,9 +3,6 @@
 namespace EVote360.Domain.Entities.Ballot;
 
 
-/// opcion de boleta para un puesto específico en la elección (incluye "Ninguno").
-/// candidateId y PartyId pueden ser nulos para representar "Ninguno".
-
 public class BallotOption : AuditableEntity
 {
     public Guid ElectionBallotId { get; private set; }

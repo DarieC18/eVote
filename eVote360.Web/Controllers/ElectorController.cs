@@ -1,6 +1,6 @@
-﻿using EVote360.Application.Common.Notifications;
+﻿using eVote360.Application.Abstractions.Services;
+using EVote360.Application.Common.Notifications;
 using EVote360.Application.Common.Ocr;
-using EVote360.Application.Votacion;
 using EVote360.Infrastructure.Persistence;
 using EVote360.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -207,7 +207,7 @@ namespace EVote360.Web.Controllers
             return RedirectToAction(nameof(Boleta));
         }
 
-        [HttpGet]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Finalizar(CancellationToken ct)
         {
             ViewBag.ElectorStep = 5;
@@ -219,14 +219,11 @@ namespace EVote360.Web.Controllers
             TempData["NationalId"] = nationalId;
 
             var (okE, errE, electionId) = await _votacion.ObtenerEleccionActivaAsync(ct);
-            if (!okE)
-                return View("Mensaje", errE);
+            if (!okE) return View("Mensaje", errE);
 
             var citizen = await _ctx.Citizens.FirstAsync(c => c.NationalId.Value == nationalId, ct);
             var completo = await _votacion.CiudadanoCompletoVotosAsync(electionId, citizen.Id, ct);
-
-            if (!completo)
-                return View("Mensaje", "Aún faltan puestos por votar.");
+            if (!completo) return View("Mensaje", "Aún faltan puestos por votar.");
 
             var (nombre, email, detalle) = await _votacion.ResumenVotoAsync(electionId, citizen.Id, ct);
 
@@ -235,13 +232,11 @@ namespace EVote360.Web.Controllers
                 var cuerpo = $"<h3>Resumen de tu voto</h3><p>{nombre}</p><ul>" +
                              string.Concat(detalle.Select(d => $"<li><b>{d.puesto}:</b> {d.opcion}</li>")) +
                              "</ul>";
-
                 await _email.SendAsync(email, "Confirmación de voto - eVote360", cuerpo, ct);
             }
 
             return View("Mensaje", "¡Gracias! Tu voto ha sido registrado. Se envió un resumen a tu correo (si estaba disponible).");
         }
-
         public IActionResult Mensaje(string msg)
         {
             ViewBag.ElectorStep = 0;

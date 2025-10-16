@@ -1,4 +1,4 @@
-﻿using EVote360.Application.Elecciones;
+﻿using eVote360.Application.Abstractions.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

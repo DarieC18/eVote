@@ -204,23 +204,36 @@
                 </div>
             </div>
 
-            <div class="col-lg-4">
-                <div class="bg-white rounded-4 shadow-sm p-4 h-100">
-                    <h3 class="h5">Requisitos mínimos</h3>
-                    <ul class="small text-muted mb-0">
-                        <li>Documento de identidad vigente</li>
-                        <li>Correo electrónico (opcional, para comprobante)</li>
-                        <li>Conexión estable a internet</li>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                            <i class="bi bi-check2-circle fs-5"></i>
+                        </div>
+                        <h5 class="card-title mb-0 fw-semibold">Requisitos mínimos</h5>
+                    </div>
+                    <ul class="list-unstyled text-secondary small ps-2 mb-3">
+                        <li class="mb-2">
+                            <i class="bi bi-person-vcard me-2 text-primary"></i>
+                            Documento de identidad vigente
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-envelope-at me-2 text-primary"></i>
+                            Correo electrónico (opcional, para comprobante)
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-wifi me-2 text-primary"></i>
+                            Conexión estable a internet
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-camera me-2 text-primary"></i>
+                            Cámara o dispositivo con capacidad para tomar foto del documento
+                        </li>
                     </ul>
-                    @if (puedeVotar)
-                    {
-                        <a asp-controller="Elector" asp-action="Index" class="btn btn-success mt-3 w-100">
-                            Listo, ¡quiero votar!
-                        </a>
-                    }
+                    </div>
                 </div>
             </div>
         </div>
+        </div>
     </section>
-
-</div>

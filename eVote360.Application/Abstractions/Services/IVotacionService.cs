@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EVote360.Application.Votacion
+namespace eVote360.Application.Abstractions.Services
 {
     public interface IVotacionService
     {
