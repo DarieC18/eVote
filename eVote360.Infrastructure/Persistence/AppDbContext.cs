@@ -26,9 +26,9 @@ public class AppDbContext : DbContext
     public DbSet<Candidate> Candidates => Set<Candidate>();
     public DbSet<Alliance> Alliances => Set<Alliance>();
     public DbSet<PartyAssignment> PartyAssignments => Set<PartyAssignment>();
-    public DbSet<Election> Elections => Set<Election>();
-    public DbSet<ElectionBallot> ElectionBallots => Set<ElectionBallot>();
-    public DbSet<BallotOption> BallotOptions => Set<BallotOption>();
+    public DbSet<Election> Elections { get; set; }
+    public DbSet<ElectionBallot> ElectionBallots { get; set; }
+    public DbSet<BallotOption> BallotOptions { get; set; }
     public DbSet<Vote> Votes => Set<Vote>();
     public DbSet<VoteItem> VoteItems => Set<VoteItem>();
     public DbSet<Candidatura> Candidaturas => Set<Candidatura>();
@@ -110,6 +110,9 @@ public class AppDbContext : DbContext
         {
             b.HasKey(pa => pa.Id);
 
+            b.Property(pa => pa.Activo)
+             .IsRequired();
+
             b.HasOne(pa => pa.Usuario)
              .WithMany(u => u.PartyAssignments)
              .HasForeignKey(pa => pa.UsuarioId)
@@ -120,7 +123,6 @@ public class AppDbContext : DbContext
              .HasForeignKey(pa => pa.PartyId)
              .OnDelete(DeleteBehavior.Cascade);
         });
-
     }
 
     private static void ApplyIsActiveFilter<TEntity>(ModelBuilder builder) where TEntity : class, ISoftDeletable

@@ -1,63 +1,45 @@
-﻿@model IReadOnlyList<(Guid id, int year, string status)>
-@{
-    ViewData["Title"] = "Gestión de Elecciones";
-}
+﻿@model IEnumerable<(Guid id, int year, string status)>
 
-<h3 class="mb-3">Gestión de Elecciones</h3>
+<h2>Elecciones</h2>
 
-@if (TempData["msg"] is string msg)
-{
-    <div class="alert alert-info">@msg</div>
-}
-
-<form asp-action="Crear" method="post" class="mb-3">
-    <div class="input-group" style="max-width: 300px;">
-        <input name="year" class="form-control" placeholder="Año" type="number" required />
-        <button class="btn btn-primary" type="submit">Crear</button>
-    </div>
+<form asp-action="Crear" method="post">
+    @Html.AntiForgeryToken()
+    <input type="number" name="year" placeholder="Año" required />
+    <button type="submit">Crear</button>
 </form>
 
-<table class="table table-striped align-middle">
-    <thead>
-        <tr>
-            <th>Año</th>
-            <th>Estado</th>
-            <th style="width:350px">Acciones</th>
-        </tr>
-    </thead>
+@if (TempData["Ok"] != null)
+{
+    <div class="alert alert-success">@TempData["Ok"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table">
+    <thead><tr><th>Año</th><th>Estado</th><th>Acciones</th></tr></thead>
     <tbody>
         @foreach (var e in Model)
         {
             <tr>
                 <td>@e.year</td>
+                <td>@e.status</td>
                 <td>
-                    @if (e.status == "Active")
-                    {
-                        <span class="badge bg-success">Activa</span>
-                    }
-                    else if (e.status == "Finished")
-                    {
-
-                        <span class="badge bg-danger">Finalizada</span>
-                    }
-                    else
-                    {
-
-                        <span class="badge bg-secondary">Borrador</span>
-                    }
-                </td>
-                <td class="d-flex gap-2">
-                    <form asp-action="Construir" method="post">
+                    <form asp-action="ConstruirBoleta" method="post" style="display:inline">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@e.id" />
-                        <button class="btn btn-outline-secondary btn-sm">Construir Boleta</button>
+                        <button type="submit">Construir boleta</button>
                     </form>
-                    <form asp-action="Activar" method="post">
+                    <form asp-action="Activar" method="post" style="display:inline">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@e.id" />
-                        <button class="btn btn-outline-success btn-sm">Activar</button>
+                        <button type="submit">Activar</button>
                     </form>
-                    <form asp-action="Finalizar" method="post">
+                    <form asp-action="Finalizar" method="post" style="display:inline">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@e.id" />
-                        <button class="btn btn-outline-danger btn-sm">Finalizar</button>
+                        <button type="submit">Finalizar</button>
                     </form>
                 </td>
             </tr>

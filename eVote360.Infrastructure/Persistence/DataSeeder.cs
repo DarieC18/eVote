@@ -53,7 +53,7 @@ public static class DataSeeder
         if (!await db.Elections.AnyAsync(ct))
         {
             var year = DateTime.UtcNow.Year;
-            db.Elections.Add(new Election("Elección General", year)); // ✔ ctor (name, year)
+            db.Elections.Add(new Election("Elección General", year));
         }
 
         await db.SaveChangesAsync(ct);

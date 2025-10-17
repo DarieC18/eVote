@@ -1,10 +1,13 @@
 ﻿using eVote360.Application.Abstractions.Services;
-using EVote360.Application.Common.Notifications;
+using EVote360.Application.Abstractions.Services;
 using EVote360.Application.Common.Ocr;
+using EVote360.Application.DTOs.Request;
+using EVote360.Application.Services;
 using EVote360.Infrastructure.Persistence;
 using EVote360.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace EVote360.Web.Controllers
 {
@@ -30,7 +33,7 @@ namespace EVote360.Web.Controllers
             return View(new ElectorIdVm());
         }
 
-        [HttpPost]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(ElectorIdVm vm, CancellationToken ct)
         {
             ViewBag.ElectorStep = 1;
@@ -44,14 +47,16 @@ namespace EVote360.Web.Controllers
             var (okE, errE, electionId) = await _votacion.ObtenerEleccionActivaAsync(ct);
             if (!okE) return View("Mensaje", "No hay ningún proceso electoral en estos momentos");
 
-            var citizen = await _ctx.Citizens.FirstOrDefaultAsync(c => c.NationalId.Value == vm.NationalId, ct);
+            var citizen = await _ctx.Citizens
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.NationalId.Value == vm.NationalId, ct);
+
             if (citizen is null)
             {
                 ModelState.AddModelError("", "Cédula no válida.");
                 return View(vm);
             }
-            if (!citizen.IsActive)
-                return View("Mensaje", "El ciudadano está inactivo.");
+            if (!citizen.IsActive) return View("Mensaje", "El ciudadano está inactivo.");
 
             var ya = await _votacion.YaEjecutoVotoAsync(electionId, citizen.Id, ct);
             if (ya) return View("Mensaje", "Ya ha ejercido su derecho al voto.");
@@ -67,7 +72,7 @@ namespace EVote360.Web.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> ValidarIdentidad(IFormFile? documentoFrontal, CancellationToken ct)
         {
             ViewBag.ElectorStep = 2;
@@ -103,7 +108,6 @@ namespace EVote360.Web.Controllers
             var nationalId = TempData["NationalId"] as string;
             if (string.IsNullOrWhiteSpace(nationalId))
                 return RedirectToAction(nameof(Index));
-
             TempData["NationalId"] = nationalId;
 
             var (okE, errE, electionId) = await _votacion.ObtenerEleccionActivaAsync(ct);
@@ -124,15 +128,18 @@ namespace EVote360.Web.Controllers
                 from vi in _ctx.VoteItems.AsNoTracking()
                 join v in _ctx.Votes.AsNoTracking() on vi.VoteId equals v.Id
                 join bo in _ctx.BallotOptions.AsNoTracking() on vi.BallotOptionId equals bo.Id
-                join eb in _ctx.ElectionBallots.AsNoTracking() on bo.ElectionBallotId equals eb.Id
                 where v.ElectionId == electionId && v.CitizenId == citizen.Id
-                select eb.PositionId
+                select bo.PositionId
             ).Distinct().ToListAsync(ct);
 
             var conteos = await (
                 from eb in _ctx.ElectionBallots.AsNoTracking()
-                join bo in _ctx.BallotOptions.AsNoTracking() on eb.Id equals bo.ElectionBallotId
-                join cnd in _ctx.Candidates.AsNoTracking() on bo.CandidateId equals cnd.Id into candLeft
+                join bo in _ctx.BallotOptions.AsNoTracking()
+                    on new { eb.ElectionId, eb.PositionId }
+                    equals new { bo.ElectionId, bo.PositionId } into optLeft
+                from bo in optLeft.DefaultIfEmpty()
+                join cnd in _ctx.Candidates.AsNoTracking()
+                    on bo.CandidateId equals cnd.Id into candLeft
                 from cnd in candLeft.DefaultIfEmpty()
                 where eb.ElectionId == electionId
                 group new { bo, cnd } by eb.PositionId into g
@@ -140,7 +147,8 @@ namespace EVote360.Web.Controllers
                 {
                     PositionId = g.Key,
                     Partidos = g.Where(x => x.cnd != null).Select(x => x.cnd!.PartyId).Distinct().Count(),
-                    Candidatos = g.Where(x => x.bo.CandidateId != null).Select(x => x.bo.CandidateId!.Value).Distinct().Count()
+                    Candidatos = g.Where(x => x.bo != null && x.bo.CandidateId != null)
+                                  .Select(x => x.bo!.CandidateId!.Value).Distinct().Count()
                 }
             ).ToListAsync(ct);
 
@@ -150,7 +158,7 @@ namespace EVote360.Web.Controllers
             {
                 ElectionId = electionId,
                 CitizenId = citizen.Id,
-                Puestos = puestos.Select(p => new EVote360.Web.Models.PuestoVm
+                Puestos = puestos.Select(p => new PuestoVm
                 {
                     PositionId = p.PositionId,
                     PositionName = p.Name,
@@ -169,10 +177,9 @@ namespace EVote360.Web.Controllers
             ViewBag.ElectorStep = 4;
 
             var opciones = await (
-                from bo in _ctx.BallotOptions
-                join eb in _ctx.ElectionBallots on bo.ElectionBallotId equals eb.Id
-                where eb.ElectionId == electionId && eb.PositionId == positionId
-                join c in _ctx.Candidates on bo.CandidateId equals c.Id into candLeft
+                from bo in _ctx.BallotOptions.AsNoTracking()
+                where bo.ElectionId == electionId && bo.PositionId == positionId
+                join c in _ctx.Candidates.AsNoTracking() on bo.CandidateId equals c.Id into candLeft
                 from c in candLeft.DefaultIfEmpty()
                 select new OpcionVm
                 {
@@ -192,19 +199,19 @@ namespace EVote360.Web.Controllers
             return View(vm);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Votar(OpcionesVm vm, CancellationToken ct)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Votar(Guid electionId, Guid citizenId, List<Guid> selectedPositions)
         {
-            ViewBag.ElectorStep = 4;
+            // Registrar el voto
+            var (ok, errorMessage) = await _votacion.RegistrarVotoAsync(electionId, citizenId, selectedPositions.First(), null);
 
-            var (ok, error) = await _votacion.RegistrarVotoAsync(vm.ElectionId, vm.CitizenId, vm.PositionId, vm.CandidateId, ct);
             if (!ok)
             {
-                ModelState.AddModelError("", error);
-                return await Opciones(vm.ElectionId, vm.CitizenId, vm.PositionId, ct);
+                TempData["ErrorMessage"] = errorMessage;
+                return RedirectToAction("Index");  // O donde corresponda
             }
 
-            return RedirectToAction(nameof(Boleta));
+            return RedirectToAction("Confirmacion");
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -215,13 +222,14 @@ namespace EVote360.Web.Controllers
             var nationalId = TempData["NationalId"] as string;
             if (string.IsNullOrWhiteSpace(nationalId))
                 return RedirectToAction(nameof(Index));
-
             TempData["NationalId"] = nationalId;
 
             var (okE, errE, electionId) = await _votacion.ObtenerEleccionActivaAsync(ct);
             if (!okE) return View("Mensaje", errE);
 
-            var citizen = await _ctx.Citizens.FirstAsync(c => c.NationalId.Value == nationalId, ct);
+            var citizen = await _ctx.Citizens.AsNoTracking()
+                .FirstAsync(c => c.NationalId.Value == nationalId, ct);
+
             var completo = await _votacion.CiudadanoCompletoVotosAsync(electionId, citizen.Id, ct);
             if (!completo) return View("Mensaje", "Aún faltan puestos por votar.");
 
@@ -232,11 +240,22 @@ namespace EVote360.Web.Controllers
                 var cuerpo = $"<h3>Resumen de tu voto</h3><p>{nombre}</p><ul>" +
                              string.Concat(detalle.Select(d => $"<li><b>{d.puesto}:</b> {d.opcion}</li>")) +
                              "</ul>";
-                await _email.SendAsync(email, "Confirmación de voto - eVote360", cuerpo, ct);
+
+                var message = new VoteReceiptRequestDto(
+                    ToEmail: email,
+                    ToName: nombre,
+                    ElectionId: electionId,
+                    CitizenId: citizen.Id,
+                    Subject: "Comprobante de Voto - eVote360",
+                    HtmlBody: cuerpo
+                );
+
+                await _email.SendAsync(message, "Comprobante de Voto - eVote360", cuerpo, ct);
             }
 
-            return View("Mensaje", "¡Gracias! Tu voto ha sido registrado. Se envió un resumen a tu correo (si estaba disponible).");
+            return View("Mensaje", "Gracias por participar. Tu voto ha sido registrado.");
         }
+
         public IActionResult Mensaje(string msg)
         {
             ViewBag.ElectorStep = 0;

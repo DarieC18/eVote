@@ -34,13 +34,17 @@ public class VotacionService : IVotacionService
     public async Task<(bool ok, string error)> RegistrarVotoAsync(
         Guid electionId, Guid citizenId, Guid positionId, Guid? candidateId, CancellationToken ct = default)
     {
-        var existe = await _votes.CountByCitizenInElectionAsync(electionId, citizenId, ct) > 0;
-        if (!existe)
+        var yaVoto = await _votes.CountByCitizenInElectionAsync(electionId, citizenId, ct) > 0;
+
+        if (yaVoto)
         {
-            var v = new EVote360.Domain.Entities.Vote.Vote(electionId, citizenId, Guid.NewGuid().ToString("N"));
-            await _votes.AddAsync(v, ct);
+            return (false, "Ya ha ejercido su derecho al voto en esta elección.");
         }
-        return (true, "");
+
+        var voto = new EVote360.Domain.Entities.Vote.Vote(electionId, citizenId, Guid.NewGuid().ToString("N"));
+        await _votes.AddAsync(voto, ct);
+
+        return (true, "Voto registrado correctamente.");
     }
 
     public Task<bool> CiudadanoCompletoVotosAsync(Guid electionId, Guid citizenId, CancellationToken ct = default)

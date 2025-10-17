@@ -6,46 +6,48 @@ namespace EVote360.Web.Areas.Admin.Controllers;
 
 [Area("Admin")]
 [Authorize(Roles = "Administrador")]
-public class EleccionesController : Controller
+public sealed class EleccionesController : Controller
 {
     private readonly IElectionService _svc;
+
     public EleccionesController(IElectionService svc) => _svc = svc;
 
+    [HttpGet]
     public async Task<IActionResult> Index(CancellationToken ct)
     {
         var list = await _svc.ListAsync(ct);
         return View(list);
     }
 
-    [HttpPost]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Crear(int year, CancellationToken ct)
     {
         var (ok, err, _) = await _svc.CrearAsync(year, ct);
-        TempData["msg"] = ok ? "✅ Elección creada correctamente." : err;
+        TempData[ok ? "Ok" : "Error"] = ok ? "Elección creada." : err;
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Construir(Guid id, CancellationToken ct)
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConstruirBoleta(Guid id, CancellationToken ct)
     {
         var (ok, err) = await _svc.ConstruirBoletaAsync(id, ct);
-        TempData["msg"] = ok ? "🗳️ Boleta construida correctamente." : err;
+        TempData[ok ? "Ok" : "Error"] = ok ? "Boletas generadas/aseguradas." : err;
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpPost]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Activar(Guid id, CancellationToken ct)
     {
         var (ok, err) = await _svc.ActivarAsync(id, ct);
-        TempData["msg"] = ok ? "✅ Elección activada." : err;
+        TempData[ok ? "Ok" : "Error"] = ok ? "Elección activada." : err;
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpPost]
+    [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Finalizar(Guid id, CancellationToken ct)
     {
         var (ok, err) = await _svc.FinalizarAsync(id, ct);
-        TempData["msg"] = ok ? "🛑 Elección finalizada." : err;
+        TempData[ok ? "Ok" : "Error"] = ok ? "Elección finalizada." : err;
         return RedirectToAction(nameof(Index));
     }
 }

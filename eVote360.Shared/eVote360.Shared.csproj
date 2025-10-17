@@ -7,7 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="15.0.1" />
+    <Compile Remove="Exeptions\**" />
+    <Compile Remove="Idempotency\**" />
+    <EmbeddedResource Remove="Exeptions\**" />
+    <EmbeddedResource Remove="Idempotency\**" />
+    <None Remove="Exeptions\**" />
+    <None Remove="Idempotency\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.3.0" />
@@ -29,9 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Emails\" />
-    <Folder Include="Exeptions\" />
-    <Folder Include="Idempotency\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 

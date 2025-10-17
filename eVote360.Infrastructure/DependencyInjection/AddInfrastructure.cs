@@ -1,17 +1,19 @@
 ﻿using EVote360.Application.Abstractions.Repositories;
-using EVote360.Application.Common.Notifications;
+using EVote360.Application.Abstractions.Services;
 using EVote360.Application.Common.Ocr;
-using EVote360.Application.Common.Security;
-using EVote360.Infrastructure.Notifications;
+using EVote360.Infrastructure.Emails;
 using EVote360.Infrastructure.Ocr;
 using EVote360.Infrastructure.Persistence;
 using EVote360.Infrastructure.Repositories;
 using EVote360.Infrastructure.Repositories.Base;
 using EVote360.Infrastructure.Security;
+using EVote360.Shared.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using EVote360.Application.Common.Security;
+
 
 namespace EVote360.Infrastructure.DependencyInjection
 {
@@ -22,6 +24,8 @@ namespace EVote360.Infrastructure.DependencyInjection
             services.AddDbContext<AppDbContext>(opt =>
                 opt.UseSqlServer(config.GetConnectionString("DefaultConnection")));
 
+            services.Configure<EmailSenderOptions>(config.GetSection("EmailSender"));
+
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<IElectionRepository, ElectionRepository>();
@@ -30,16 +34,22 @@ namespace EVote360.Infrastructure.DependencyInjection
             services.AddScoped<IPartyAssignmentRepository, PartyAssignmentRepository>();
             services.AddScoped<IVoteRepository, VoteRepository>();
             services.AddScoped<IPositionRepository, PositionRepository>();
-            services.AddScoped<IEmailService, SmtpEmailService>();
+
+            services.AddSingleton<InMemoryEmailQueue>();
+            services.AddHostedService<EmailBackgroundService>();
+            services.AddScoped<
+                EVote360.Application.Abstractions.Services.IEmailService,
+                EVote360.Infrastructure.Emails.SmtpEmailService>();
+
             services.AddScoped<IOcrService, TesseractOcrMock>();
             services.AddScoped<IPasswordHasher, Pbkdf2PasswordHasher>();
 
+            // Auth
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(o =>
+                .AddCookie(options =>
                 {
-                    o.LoginPath = "/Cuenta/Acceder";
-                    o.AccessDeniedPath = "/Cuenta/Denegado";
-                    o.SlidingExpiration = true;
+                    options.LoginPath = "/Cuenta/Acceder";
+                    options.AccessDeniedPath = "/Cuenta/Denegado";
                 });
 
             return services;

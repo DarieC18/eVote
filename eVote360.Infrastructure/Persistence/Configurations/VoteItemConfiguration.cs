@@ -1,33 +1,28 @@
-﻿using EVote360.Domain.Entities.Vote;
+﻿using EVote360.Domain.Entities;
+using EVote360.Domain.Entities.Ballot;
+using EVote360.Domain.Entities.Vote;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EVote360.Infrastructure.Persistence.Configurations;
 
-public class VoteItemConfiguration : IEntityTypeConfiguration<VoteItem>
+public sealed class VoteItemConfiguration : IEntityTypeConfiguration<VoteItem>
 {
-    public void Configure(EntityTypeBuilder<VoteItem> b)
+    public void Configure(EntityTypeBuilder<VoteItem> builder)
     {
-        b.ToTable("VoteItems");
-        b.HasKey(x => x.Id);
+        builder.ToTable("VoteItems");
 
-        b.Property(x => x.VoteId).IsRequired();
-        b.Property(x => x.ElectionBallotId).IsRequired();
-        b.Property(x => x.BallotOptionId).IsRequired();
+        builder.HasKey(x => x.Id);
 
-        b.HasOne<Domain.Entities.Ballot.ElectionBallot>()
-            .WithMany()
-            .HasForeignKey(x => x.ElectionBallotId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(x => x.VoteId).IsRequired();
+        builder.Property(x => x.BallotOptionId).IsRequired();
 
-        b.HasOne<Domain.Entities.Ballot.BallotOption>()
-            .WithMany()
-            .HasForeignKey(x => x.BallotOptionId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<BallotOption>()
+               .WithMany()
+               .HasForeignKey(x => x.BallotOptionId)
+               .OnDelete(DeleteBehavior.Restrict);
 
-        // Evitar repetir misma selección dentro de un voto
-        b.HasIndex(x => new { x.VoteId, x.ElectionBallotId }).IsUnique();
-
-        b.Property(x => x.CreatedAt).IsRequired();
+        builder.HasIndex(x => new { x.VoteId, x.BallotOptionId })
+               .IsUnique();
     }
 }

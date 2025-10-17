@@ -18,6 +18,8 @@ public class Usuario
     public ICollection<PartyAssignment> PartyAssignments { get; private set; }
         = new List<PartyAssignment>();
 
+    public string FullName => $"{Nombre} {Apellido}";
+
     private Usuario() { }
 
     public Usuario(string nombre, string apellido, string email, string nombreUsuario, string passwordHash, string rol)

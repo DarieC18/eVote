@@ -1,4 +1,5 @@
-﻿using EVote360.Domain.Entities.Ballot;
+﻿// eVote360.Infrastructure/Persistence/Configurations/BallotOptionConfiguration.cs
+using EVote360.Domain.Entities.Ballot;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -6,25 +7,25 @@ namespace EVote360.Infrastructure.Persistence.Configurations;
 
 public class BallotOptionConfiguration : IEntityTypeConfiguration<BallotOption>
 {
-    public void Configure(EntityTypeBuilder<BallotOption> b)
+    public void Configure(EntityTypeBuilder<BallotOption> builder)
     {
-        b.ToTable("BallotOptions");
-        b.HasKey(x => x.Id);
+        builder.ToTable("BallotOptions");
 
-        b.Property(x => x.ElectionBallotId).IsRequired();
-        b.HasOne<ElectionBallot>()
-            .WithMany()
-            .HasForeignKey(x => x.ElectionBallotId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasKey(x => x.Id);
 
-        // Candidate/Party pueden ser null (para "Ninguno")
-        b.Property(x => x.CandidateId).IsRequired(false);
-        b.Property(x => x.PartyId).IsRequired(false);
+        builder.Property(x => x.ElectionId).IsRequired();
+        builder.Property(x => x.PositionId).IsRequired();
+        builder.Property(x => x.IsNinguno).IsRequired();
 
-        // Evitar duplicados de opciones dentro del mismo ballot
-        b.HasIndex(x => new { x.ElectionBallotId, x.CandidateId, x.PartyId, x.IsNinguno }).IsUnique();
+        builder.Property(x => x.CandidateId);
+        builder.Property(x => x.PartyId);
 
-        b.Property(x => x.IsNinguno).IsRequired();
-        b.Property(x => x.CreatedAt).IsRequired();
+        builder.HasIndex(x => new { x.ElectionId, x.PositionId, x.IsNinguno })
+               .IsUnique()
+               .HasFilter("[IsNinguno] = 1");
+
+        builder.HasIndex(x => new { x.ElectionId, x.PositionId, x.CandidateId })
+               .IsUnique()
+               .HasFilter("[CandidateId] IS NOT NULL");
     }
 }

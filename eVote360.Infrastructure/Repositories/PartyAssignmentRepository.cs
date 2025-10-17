@@ -1,5 +1,6 @@
 ﻿using EVote360.Domain.Entities.Assignments;
 using EVote360.Infrastructure.Persistence;
+using EVote360.Application.Abstractions.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace EVote360.Infrastructure.Repositories;

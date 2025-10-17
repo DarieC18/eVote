@@ -1,61 +1,32 @@
-﻿using EVote360.Domain.Base;
+﻿namespace EVote360.Domain.Entities.Ballot;
 
-namespace EVote360.Domain.Entities.Ballot;
-
-
-public class BallotOption : AuditableEntity
+public class BallotOption
 {
-    public Guid ElectionBallotId { get; private set; }
-
-    public Guid? CandidateId { get; private set; }
+    public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid ElectionId { get; private set; }
+    public Guid PositionId { get; private set; }
     public Guid? PartyId { get; private set; }
-
+    public Guid? CandidateId { get; private set; }
     public bool IsNinguno { get; private set; }
 
     private BallotOption() { }
 
-    public static BallotOption CreateCandidateOption(Guid electionBallotId, Guid candidateId, Guid partyId)
+    private BallotOption(Guid electionId, Guid positionId, Guid? partyId, Guid? candidateId, bool isNinguno)
     {
-        if (electionBallotId == Guid.Empty || candidateId == Guid.Empty || partyId == Guid.Empty)
-            throw new ArgumentException("Ids inválidos para opción de candidato.");
-
-        return new BallotOption
-        {
-            ElectionBallotId = electionBallotId,
-            CandidateId = candidateId,
-            PartyId = partyId,
-            IsNinguno = false
-        };
+        ElectionId = electionId;
+        PositionId = positionId;
+        PartyId = partyId;
+        CandidateId = candidateId;
+        IsNinguno = isNinguno;
     }
+    public static BallotOption CreateNinguno(Guid electionBallotId, Guid positionId)
+        => new BallotOption(
+            electionId: electionBallotId,
+            positionId: positionId,
+            partyId: null,
+            candidateId: null,
+            isNinguno: true);
 
-    public static BallotOption CreateNinguno(Guid electionBallotId)
-    {
-        if (electionBallotId == Guid.Empty)
-            throw new ArgumentException("ElectionBallotId inválido.");
-
-        return new BallotOption
-        {
-            ElectionBallotId = electionBallotId,
-            CandidateId = null,
-            PartyId = null,
-            IsNinguno = true
-        };
-    }
-    public static BallotOption ForCandidate(Guid electionBallotId, Guid candidateId)
-    => new BallotOption
-    {
-        ElectionBallotId = electionBallotId,
-        CandidateId = candidateId,
-        IsNinguno = false
-    };
-
-    public static BallotOption None(Guid electionBallotId)
-        => new BallotOption
-        {
-            ElectionBallotId = electionBallotId,
-            CandidateId = null,
-            IsNinguno = true
-        };
-
+    public static BallotOption ForCandidate(Guid electionId, Guid positionId, Guid partyId, Guid candidateId)
+        => new BallotOption(electionId, positionId, partyId, candidateId, false);
 }
-

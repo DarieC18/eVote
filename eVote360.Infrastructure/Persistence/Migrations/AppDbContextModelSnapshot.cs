@@ -71,6 +71,9 @@ namespace eVote360.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -80,15 +83,17 @@ namespace eVote360.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Id")
+                        .IsUnique();
+
                     b.HasIndex("PartyId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("PartyAssignments", (string)null);
                 });
@@ -102,10 +107,7 @@ namespace eVote360.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("CandidateId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ElectionBallotId")
+                    b.Property<Guid>("ElectionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsNinguno")
@@ -114,14 +116,18 @@ namespace eVote360.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("PartyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
+                    b.Property<Guid>("PositionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ElectionBallotId", "CandidateId", "PartyId", "IsNinguno")
+                    b.HasIndex("ElectionId", "PositionId", "CandidateId")
                         .IsUnique()
-                        .HasFilter("[CandidateId] IS NOT NULL AND [PartyId] IS NOT NULL");
+                        .HasFilter("[CandidateId] IS NOT NULL");
+
+                    b.HasIndex("ElectionId", "PositionId", "IsNinguno")
+                        .IsUnique()
+                        .HasFilter("[IsNinguno] = 1");
 
                     b.ToTable("BallotOptions", (string)null);
                 });
@@ -132,21 +138,13 @@ namespace eVote360.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<Guid>("ElectionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("PositionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("PositionId");
 
                     b.HasIndex("ElectionId", "PositionId")
                         .IsUnique();
@@ -187,6 +185,43 @@ namespace eVote360.Infrastructure.Persistence.Migrations
                     b.HasIndex("PartyId");
 
                     b.ToTable("Candidates", (string)null);
+                });
+
+            modelBuilder.Entity("EVote360.Domain.Entities.Candidate.Candidatura", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("CandidateId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PartyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PositionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PartyId", "CandidateId")
+                        .IsUnique();
+
+                    b.HasIndex("PartyId", "PositionId")
+                        .IsUnique();
+
+                    b.ToTable("Candidaturas");
                 });
 
             modelBuilder.Entity("EVote360.Domain.Entities.Citizen.Citizen", b =>
@@ -337,6 +372,57 @@ namespace eVote360.Infrastructure.Persistence.Migrations
                     b.ToTable("Positions", (string)null);
                 });
 
+            modelBuilder.Entity("EVote360.Domain.Entities.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Apellido")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("NombreUsuario")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rol")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("NombreUsuario")
+                        .IsUnique();
+
+                    b.ToTable("Usuarios");
+                });
+
             modelBuilder.Entity("EVote360.Domain.Entities.Vote.Vote", b =>
                 {
                     b.Property<Guid>("Id")
@@ -357,8 +443,7 @@ namespace eVote360.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("ReceiptHash")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -396,9 +481,7 @@ namespace eVote360.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("BallotOptionId");
 
-                    b.HasIndex("ElectionBallotId");
-
-                    b.HasIndex("VoteId", "ElectionBallotId")
+                    b.HasIndex("VoteId", "BallotOptionId")
                         .IsUnique();
 
                     b.ToTable("VoteItems", (string)null);
@@ -421,35 +504,21 @@ namespace eVote360.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("EVote360.Domain.Entities.Assignments.PartyAssignment", b =>
                 {
-                    b.HasOne("EVote360.Domain.Entities.Party.Party", null)
+                    b.HasOne("EVote360.Domain.Entities.Party.Party", "Party")
                         .WithMany()
                         .HasForeignKey("PartyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EVote360.Domain.Entities.Ballot.BallotOption", b =>
-                {
-                    b.HasOne("EVote360.Domain.Entities.Ballot.ElectionBallot", null)
-                        .WithMany()
-                        .HasForeignKey("ElectionBallotId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EVote360.Domain.Entities.Ballot.ElectionBallot", b =>
-                {
-                    b.HasOne("EVote360.Domain.Entities.Election.Election", null)
-                        .WithMany()
-                        .HasForeignKey("ElectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EVote360.Domain.Entities.Position.Position", null)
-                        .WithMany()
-                        .HasForeignKey("PositionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("EVote360.Domain.Entities.Usuario", "Usuario")
+                        .WithMany("PartyAssignments")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Party");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("EVote360.Domain.Entities.Candidate.Candidate", b =>
@@ -469,17 +538,16 @@ namespace eVote360.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EVote360.Domain.Entities.Ballot.ElectionBallot", null)
-                        .WithMany()
-                        .HasForeignKey("ElectionBallotId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("EVote360.Domain.Entities.Vote.Vote", null)
                         .WithMany("Items")
                         .HasForeignKey("VoteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("EVote360.Domain.Entities.Usuario", b =>
+                {
+                    b.Navigation("PartyAssignments");
                 });
 
             modelBuilder.Entity("EVote360.Domain.Entities.Vote.Vote", b =>

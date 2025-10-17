@@ -38,4 +38,6 @@ public sealed class UsuarioRepository : IUsuarioRepository
     public Task<bool> DirigenteTienePartidoActivoAsync(int usuarioId, CancellationToken ct = default)
         => _db.PartyAssignments.AsNoTracking()
             .AnyAsync(pa => pa.UsuarioId == usuarioId && pa.Activo, ct);
+    public Task<Usuario?> GetByEmailAsync(string email, CancellationToken ct = default)
+        => _db.Usuarios.FirstOrDefaultAsync(x => x.Email == email, ct);
 }
